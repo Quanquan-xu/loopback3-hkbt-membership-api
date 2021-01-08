@@ -1,0 +1,34 @@
+{
+  "db": {
+    "name": "db",
+    "connector": "memory"
+  },
+  "membership": {
+    "host": "hkbt-db.c9so7kjb1qm9.ap-east-1.rds.amazonaws.com",
+    "port": 3306,
+    "database": "membership",
+    "password": "j&Rf6u-C4FQt%!e9",
+    "name": "member",
+    "user": "admin",
+    "connector": "mysql"
+  },
+  "emailDs": {
+    "name": "emailDs",
+    "connector": "mail",
+    "transports": [
+      {
+        "type": "smtp",
+        "host": "smtp.gmail.com",
+        "secure": true,
+        "port": 465,
+        "tls": {
+          "rejectUnauthorized": false
+        },
+        "auth": {
+          "user": "noreply@businesstimes.com.hk",
+          "pass": "Hkbt@2020"
+        }
+      }
+    ]
+  }
+}
