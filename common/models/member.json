@@ -6,6 +6,8 @@
   "options": {
     "validateUpsert": true
   },
+  "restrictResetPasswordTokenScope": true,
+  "emailVerificationRequired": true,
   "properties": {
     "signUpBy": {
       "type": "string",
@@ -49,10 +51,21 @@
       "required": false
     }
   },
-  "restrictResetPasswordTokenScope": true,
-  "emailVerificationRequired": true,
   "validations": [],
   "relations": {},
-  "acls": [],
+  "acls": [
+    {
+    "principalType": "ROLE",
+    "principalId": "*",
+    "permission": "DEFAULT",
+    "property": "*"
+    },
+    {
+    "principalType": "ROLE",
+    "principalId": "$everyone",
+    "permission": "ALLOW",
+    "property": "findOne"
+    }
+  ],
   "methods": {}
 }

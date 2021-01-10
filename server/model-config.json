@@ -39,7 +39,7 @@
     "dataSource": "emailDs"
   },
   "member": {
-    "dataSource": "membership",
+    "dataSource": "member",
     "public": true
   }
 }
