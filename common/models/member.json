@@ -53,19 +53,6 @@
   },
   "validations": [],
   "relations": {},
-  "acls": [
-    {
-    "principalType": "ROLE",
-    "principalId": "*",
-    "permission": "DEFAULT",
-    "property": "*"
-    },
-    {
-    "principalType": "ROLE",
-    "principalId": "$everyone",
-    "permission": "ALLOW",
-    "property": "findOne"
-    }
-  ],
+  "acls": [],
   "methods": {}
 }
