@@ -3,12 +3,13 @@
 // module.exports = function(Member) {
 
 // };
-
-var config = require('../../server/config.json');
-var path = require('path');
-
+const clientUrl = process.env.NODE_ENV === 'production' ? "http://membership.businesstimes.com.hk" : "http://localhost:3000"
+const speakeasy = require('speakeasy');
+const config = require('../../server/config.json');
+const path = require('path');
+const APP_SECRET = "+nAufYi:~zJm@+e**$)}A_)UQ7@n]!SxhL-8.41ZL0MbW&6jo(,}S'Ewf#_;1[+"
 //Replace this address with your actual address
-var senderAddress = 'noreply@businesstimes.com.hk';
+const senderAddress = 'noreply@businesstimes.com.hk';
 
 module.exports = function(Member) {
   //send verification email after registration
@@ -48,7 +49,90 @@ module.exports = function(Member) {
   //Member.disableRemoteMethodByName("setPassword");                          // disables POST /Members/reset-password
   Member.disableRemoteMethodByName("update");                               // disables POST /Members/update
   Member.disableRemoteMethodByName("upsertWithWhere");
+  Member.requestSMSCode = function(json, fn) {
+    try {
+      const credential = JSON.parse(json)
+      if(credential && credential["signUpBy"]==="phone" && credential["password"] && credential["username"] && credential['signUpInfo']){
+        credential['email'] = credential['signUpInfo'].replaceAll("+", "").replaceAll(" ","_").replaceAll("-","") + "@businesstimes.com.hk";
+        this.findOne({where: { email: credential.email }}, function(err, member) {
+          if(member){
+            member.hasPassword(credential.password, function(err, isMatch) {
+                if (isMatch) {
+                  // Note that you’ll want to change the secret to something a lot more secure!
+                  const code = speakeasy.totp({secret: APP_SECRET + credential.email});
+                  const message = '歡迎註冊香港財經時報會員！妳的手機驗證碼是 ' + ': ' + code
+                  console.log(message);
 
+                  // [TODO] hook into your favorite SMS API and send your user their code!
+
+                  fn(null, message);
+                } else {
+                  let err = new Error('Sorry, Authorization Required!'+ "code: Password");
+                  err.statusCode = 401;
+                  err.code = 'AUTHORIZATION_REQUIRED';
+                  return fn(err);
+                }
+            });
+          }else{
+            let err = new Error('Sorry, Authorization Required!'+ "code: Member");
+            err.statusCode = 401;
+            err.code = 'AUTHORIZATION_REQUIRED';
+            return fn(err);
+          }
+        });
+      }else{
+        let err = new Error('Sorry, Authorization Required!');
+        err.statusCode = 401;
+        err.code = 'AUTHORIZATION_REQUIRED';
+        return fn(err);
+      }
+    } catch(e) {
+      let err = new Error('Sorry, Authorization Required!');
+      err.statusCode = 401;
+      err.code = 'AUTHORIZATION_REQUIRED';
+      return fn(err);
+    }
+  };
+  Member.verifySMSCode = function(json, fn) {
+    try {
+      const credential = JSON.parse(json)
+      if(credential && credential["signUpBy"]==="phone" && credential["code"] && credential['signUpInfo']){
+        credential['email'] = credential['signUpInfo'].replaceAll("+", "").replaceAll(" ","_").replaceAll("-","") + "@businesstimes.com.hk";
+        this.findOne({where: { email: credential.email }}, function(err, member) {
+          var code = speakeasy.totp({secret: APP_SECRET + credential.email});
+          if (code.toString() !== credential["code"]) {
+            var err = new Error('Sorry, but that verification code does not work!'+code);
+            err.statusCode = 401;
+            err.code = 'VERIFIED_FAILED';
+            return fn(err);
+          }
+          member.createAccessToken(600, function(err, token) {
+            if (err) return fn(err);
+            token.__data.member = member;
+            fn(err, token);
+          });
+        });
+      }else{
+        let err = new Error('Sorry, Authorization Required!');
+        err.statusCode = 401;
+        err.code = 'AUTHORIZATION_REQUIRED';
+        return fn(err);
+      }
+    } catch(e) {
+      let err = new Error('Sorry, Authorization Required!');
+      err.statusCode = 401;
+      err.code = 'AUTHORIZATION_REQUIRED';
+      return fn(err);
+    }
+  };
+  Member.remoteMethod('requestSMSCode', {
+    accepts: {arg: 'json', type: 'string'},
+    returns: {arg: 'response', type: 'string'}
+  });
+  Member.remoteMethod('verifySMSCode', {
+    accepts: {arg: 'json', type: 'string'},
+    returns: {arg: 'response', type: 'string'}
+  });
   Member.afterRemote('create', function(context, member, next) {
     if(member.signUpBy==="email"){
       var options = {
@@ -57,7 +141,7 @@ module.exports = function(Member) {
         from: senderAddress,
         subject: '歡迎註冊香港財經時報會員！',
         template: path.resolve(__dirname, '../../server/views/verify.ejs'),
-        redirect: 'http://localhost:3000/signin',
+        redirect: `${clientUrl}/signin`,
         member: member
       };
       member.verify(options, function(err, response) {
@@ -90,7 +174,7 @@ module.exports = function(Member) {
 
   //send password reset link when requested
   Member.on('resetPasswordRequest', function(info) {
-    var url = 'http://' + config.host + ':' + config.port + '/reset-password';
+    var url = clientUrl + '/reset-password';
     var html = 'Click <a href="' + url + '?access_token=' +
         info.accessToken.id + '">here</a> to reset your password';
 
