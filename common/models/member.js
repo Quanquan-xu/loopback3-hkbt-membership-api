@@ -49,6 +49,7 @@ module.exports = function(Member) {
   //Member.disableRemoteMethodByName("setPassword");                          // disables POST /Members/reset-password
   Member.disableRemoteMethodByName("update");                               // disables POST /Members/update
   Member.disableRemoteMethodByName("upsertWithWhere");
+
   Member.requestSMSCode = function(json, fn) {
     try {
       const credential = JSON.parse(json)
@@ -87,6 +88,19 @@ module.exports = function(Member) {
         return fn(err);
       }
     } catch(e) {
+      // var smsData = {
+      //       type: 'sms',
+      //       to: "+852 3619 0271",
+      //       from: "+15005550006",
+      //       body: 'Hello, from the LoopBack Twilio Connector!'
+      // };
+      // Member.app.models.Twilio.send(smsData, function (err, data) {
+      //       if (err) {
+      //           console.log(err);
+      //       } else {
+      //           console.log(data);
+      //       }
+      // });
       let err = new Error('Sorry, Authorization Required!');
       err.statusCode = 401;
       err.code = 'AUTHORIZATION_REQUIRED';
@@ -136,6 +150,9 @@ module.exports = function(Member) {
   Member.afterRemote('create', function(context, member, next) {
     if(member.signUpBy==="email"){
       var options = {
+        host: 'membership.businesstimes.com.hk',
+        port: 80,
+        text:"妳可以通過在瀏覽器中打開此鏈接來驗證您的電子郵件：\n\t{href}",
         type: 'email',
         to: member.email,
         from: senderAddress,

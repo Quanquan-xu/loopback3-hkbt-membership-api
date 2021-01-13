@@ -38,6 +38,10 @@
   "Email": {
     "dataSource": "emailDs"
   },
+  "Twilio": {
+    "dataSource": "twilio",
+    "public": true
+  },
   "member": {
     "dataSource": "member",
     "public": true

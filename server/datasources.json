@@ -30,5 +30,11 @@
         }
       }
     ]
+  },
+  "twilio": {
+    "name": "twilio",
+    "connector": "loopback-connector-twilio",
+    "accountSid": "AC9238dccc86a96f7cc7f58c96f539157d",
+    "authToken": "65b7337eb01ec711552371dcc96460e3"
   }
 }
