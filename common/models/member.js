@@ -150,9 +150,6 @@ module.exports = function(Member) {
   Member.afterRemote('create', function(context, member, next) {
     if(member.signUpBy==="email"){
       var options = {
-        host: 'membership.businesstimes.com.hk',
-        port: 80,
-        text:"妳可以通過在瀏覽器中打開此鏈接來驗證您的電子郵件：\n\t{href}",
         type: 'email',
         to: member.email,
         from: senderAddress,
