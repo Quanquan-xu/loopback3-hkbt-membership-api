@@ -53,55 +53,59 @@ module.exports = function(Member) {
   Member.requestSMSCode = function(json, fn) {
     try {
       const credential = JSON.parse(json)
+      console.log('Hellloooo')
       if(credential && credential["signUpBy"]==="phone" && credential["password"] && credential["username"] && credential['signUpInfo']){
-        credential['email'] = credential['signUpInfo'].replaceAll("+", "").replaceAll(" ","_").replaceAll("-","") + "@businesstimes.com.hk";
-        this.findOne({where: { email: credential.email }}, function(err, member) {
+        console.log('World')
+        //credential['email'] = credential['signUpInfo'].replaceAll("+", "").replaceAll(" ","_").replaceAll("-","") + "@businesstimes.com.hk";
+        this.findOne({where: { signUpInfo: credential["signUpInfo"] }}, function(err, member) {
           if(member){
             member.hasPassword(credential.password, function(err, isMatch) {
                 if (isMatch) {
                   // Note that you’ll want to change the secret to something a lot more secure!
-                  const code = speakeasy.totp({secret: APP_SECRET + credential.email});
-                  const message = '歡迎註冊香港財經時報會員！妳的手機驗證碼是 ' + ': ' + code
+                  const code = speakeasy.totp({
+                    secret: APP_SECRET + credential["signUpInfo"],
+                    time: 180
+                  });
+                  const message =`TO ${credential['signUpInfo']} 驗證碼發送成功！` + code;
                   console.log(message);
-
                   // [TODO] hook into your favorite SMS API and send your user their code!
-
                   fn(null, message);
+                  // var smsData = {
+                  //     type: 'sms',
+                  //     to: credential['signUpInfo'],
+                  //     from: "HKBT",
+                  //     body: `[香港財經時報HKBT]驗證碼：${code}，請在3分鐘內使用。`
+                  //   };
+                  //   Member.app.models.Twilio.send(smsData, function (err, data) {
+                  //         if (err) {
+                  //             return fn(err);
+                  //         } else {
+                  //             fn(null, message);
+                  //         }
+                  //   });
                 } else {
-                  let err = new Error('Sorry, Authorization Required!'+ "code: Password");
+                  let err = new Error('Sorry, Authorization Required!3');
                   err.statusCode = 401;
                   err.code = 'AUTHORIZATION_REQUIRED';
                   return fn(err);
                 }
             });
           }else{
-            let err = new Error('Sorry, Authorization Required!'+ "code: Member");
+            let err = new Error('Sorry, Authorization Required!2');
             err.statusCode = 401;
             err.code = 'AUTHORIZATION_REQUIRED';
             return fn(err);
           }
         });
       }else{
-        let err = new Error('Sorry, Authorization Required!');
+        let err = new Error('Sorry, Authorization Required!1');
         err.statusCode = 401;
         err.code = 'AUTHORIZATION_REQUIRED';
         return fn(err);
       }
     } catch(e) {
-      // var smsData = {
-      //       type: 'sms',
-      //       to: "+852 3619 0271",
-      //       from: "+15005550006",
-      //       body: 'Hello, from the LoopBack Twilio Connector!'
-      // };
-      // Member.app.models.Twilio.send(smsData, function (err, data) {
-      //       if (err) {
-      //           console.log(err);
-      //       } else {
-      //           console.log(data);
-      //       }
-      // });
-      let err = new Error('Sorry, Authorization Required!');
+      console.log(e)
+      let err = new Error('Sorry, Authorization Required!0'+ json);
       err.statusCode = 401;
       err.code = 'AUTHORIZATION_REQUIRED';
       return fn(err);
@@ -111,9 +115,12 @@ module.exports = function(Member) {
     try {
       const credential = JSON.parse(json)
       if(credential && credential["signUpBy"]==="phone" && credential["code"] && credential['signUpInfo']){
-        credential['email'] = credential['signUpInfo'].replaceAll("+", "").replaceAll(" ","_").replaceAll("-","") + "@businesstimes.com.hk";
-        this.findOne({where: { email: credential.email }}, function(err, member) {
-          var code = speakeasy.totp({secret: APP_SECRET + credential.email});
+        //credential['email'] = credential['signUpInfo'].replaceAll("+", "").replaceAll(" ","_").replaceAll("-","") + "@businesstimes.com.hk";
+        this.findOne({where: { signUpInfo: credential["signUpInfo"] }}, function(err, member) {
+          var code = speakeasy.totp({
+            secret: APP_SECRET + credential["signUpInfo"],
+            time: 180
+          });
           if (code.toString() !== credential["code"]) {
             var err = new Error('Sorry, but that verification code does not work!'+code);
             err.statusCode = 401;
