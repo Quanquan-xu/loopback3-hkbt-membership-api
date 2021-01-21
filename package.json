@@ -20,6 +20,7 @@
     "loopback-component-explorer": "^2.7.0",
     "loopback-connector-mysql": "^6.0.0",
     "loopback-connector-twilio": "^2.0.0",
+    "loopback-content-range": "^2.0.0",
     "serve-favicon": "^2.0.1",
     "speakeasy": "^2.0.0",
     "strong-error-handler": "^4.0.0"

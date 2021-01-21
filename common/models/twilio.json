@@ -1,3 +1,8 @@
 {
-  "name": "Twilio"
+  "name": "Twilio",
+  "properties": {},
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
 }

@@ -1,0 +1,9 @@
+{
+  "loopback-component-explorer": null,
+  "loopback-content-range": {
+    "pattern": [
+      "*.find"
+    ],
+    "relatedModels": true
+  }
+}

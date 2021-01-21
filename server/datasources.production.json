@@ -4,19 +4,19 @@
     "connector": "memory"
   },
   "member": {
-    "host": "localhost",
+    "host": "hkbt-db.c9so7kjb1qm9.ap-east-1.rds.amazonaws.com",
     "port": 3306,
     "database": "membership",
-    "password": "membership",
+    "password": "j&Rf6u-C4FQt%!e9",
     "name": "member",
     "user": "admin",
     "connector": "mysql"
   },
   "favourite": {
-    "host": "localhost",
+    "host": "hkbt-db.c9so7kjb1qm9.ap-east-1.rds.amazonaws.com",
     "port": 3306,
     "database": "membership",
-    "password": "membership",
+    "password": "j&Rf6u-C4FQt%!e9",
     "name": "favourite",
     "user": "admin",
     "connector": "mysql"

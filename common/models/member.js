@@ -14,7 +14,7 @@ const senderAddress = 'noreply@businesstimes.com.hk';
 module.exports = function(Member) {
   //send verification email after registration
   Member.disableRemoteMethodByName("upsert");                               // disables PATCH /Members
-  Member.disableRemoteMethodByName("find");                                 // disables GET /Members
+  //Member.disableRemoteMethodByName("find");                                 // disables GET /Members
   Member.disableRemoteMethodByName("replaceOrCreate");                      // disables PUT /Members
   //Member.disableRemoteMethodByName("create");                               // disables POST /Members
 
@@ -53,9 +53,7 @@ module.exports = function(Member) {
   Member.requestSMSCode = function(json, fn) {
     try {
       const credential = JSON.parse(json)
-      console.log('Hellloooo')
       if(credential && credential["signUpBy"]==="phone" && credential["password"] && credential["username"] && credential['signUpInfo']){
-        console.log('World')
         //credential['email'] = credential['signUpInfo'].replaceAll("+", "").replaceAll(" ","_").replaceAll("-","") + "@businesstimes.com.hk";
         this.findOne({where: { signUpInfo: credential["signUpInfo"] }}, function(err, member) {
           if(member){
@@ -69,20 +67,22 @@ module.exports = function(Member) {
                   const message =`TO ${credential['signUpInfo']} 驗證碼發送成功！` + code;
                   console.log(message);
                   // [TODO] hook into your favorite SMS API and send your user their code!
-                  fn(null, message);
-                  // var smsData = {
-                  //     type: 'sms',
-                  //     to: credential['signUpInfo'],
-                  //     from: "HKBT",
-                  //     body: `[香港財經時報HKBT]驗證碼：${code}，請在3分鐘內使用。`
-                  //   };
-                  //   Member.app.models.Twilio.send(smsData, function (err, data) {
-                  //         if (err) {
-                  //             return fn(err);
-                  //         } else {
-                  //             fn(null, message);
-                  //         }
-                  //   });
+                  // fn(null, message);
+                  var smsData = {
+                      type: 'sms',
+                      to: credential['signUpInfo'],
+                      from: "HKBT",
+                      body: `[香港財經時報HKBT]驗證碼：${code}，請在3分鐘內使用。`
+                    };
+                    Member.app.models.Twilio.send(smsData, function (err, data) {
+                          if (err) {
+                            //console.log(err)
+                              return fn(err);
+                          } else {
+                            //console.log(data)
+                            fn(null, message);
+                          }
+                    });
                 } else {
                   let err = new Error('Sorry, Authorization Required!3');
                   err.statusCode = 401;
@@ -173,39 +173,21 @@ module.exports = function(Member) {
           Member.deleteById(member.id);
           return next(err);
         }
-        context.res.render('response', {
-          title: 'Signed up successfully',
-          content: 'Please check your email and click on the verification link ' +
-              'before logging in.',
-          redirectTo: '/',
-          redirectToLinkText: 'Log in'
-        });
+        context.res.send('郵箱地址認證成功！');
       });
     }
   });
 
-  // Method to render
-  Member.afterRemote('prototype.verify', function(context, member, next) {
-    context.res.render('response', {
-      title: 'A Link to reverify your identity has been sent '+
-        'to your email successfully',
-      content: 'Please check your email and click on the verification link '+
-        'before logging in',
-      redirectTo: '/',
-      redirectToLinkText: 'Log in'
-    });
-  });
-
   //send password reset link when requested
   Member.on('resetPasswordRequest', function(info) {
-    var url = clientUrl + '/reset-password';
-    var html = 'Click <a href="' + url + '?access_token=' +
-        info.accessToken.id + '">here</a> to reset your password';
+    var url = clientUrl + '/forget-password';
+    var html = '親愛的香港財經時報會員，您申請了密碼重置， <a href="' + url + '?access_token=' +
+        info.accessToken.id + '">點擊這可以重置妳的密碼！</a>';
 
     Member.app.models.Email.send({
       to: info.email,
       from: senderAddress,
-      subject: 'Password reset',
+      subject: '密碼重置-香港財經時報',
       html: html
     }, function(err) {
       if (err) return console.log('> error sending password reset email');
@@ -213,23 +195,8 @@ module.exports = function(Member) {
     });
   });
 
-  //render UI page after password change
-  Member.afterRemote('changePassword', function(context, member, next) {
-    context.res.render('response', {
-      title: 'Password changed successfully',
-      content: 'Please login again with new password',
-      redirectTo: '/',
-      redirectToLinkText: 'Log in'
-    });
-  });
-
   //render UI page after password reset
   Member.afterRemote('setPassword', function(context, member, next) {
-    context.res.render('response', {
-      title: 'Password reset success',
-      content: 'Your password has been reset successfully',
-      redirectTo: '/',
-      redirectToLinkText: 'Log in'
-    });
+    context.res.send("密碼重設成功！")
   });
 };
