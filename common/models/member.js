@@ -159,12 +159,12 @@ module.exports = function(Member) {
       var options = {
         host: 'membership.businesstimes.com.hk',
         port: 80,
-        text:"妳可以通過在瀏覽器中打開此鏈接來驗證您的電子郵件：\n\t{href}",
+        text:"{href}",
         type: 'email',
         to: member.email,
         from: senderAddress,
         subject: '歡迎註冊香港財經時報會員！',
-        template: path.resolve(__dirname, '../../server/views/verify.ejs'),
+        template: path.resolve(__dirname, '../../server/views/email-verify.ejs'),
         redirect: `${clientUrl}/signin`,
         member: member
       };
