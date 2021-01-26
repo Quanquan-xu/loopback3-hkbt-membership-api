@@ -17,6 +17,14 @@
       "type": "string",
       "required": false
     },
+    "emailInfo": {
+      "type": "string",
+      "required": false
+    },
+    "phoneNumber": {
+      "type": "string",
+      "required": false
+    },
     "bidYear": {
       "type": "number",
       "required": false
