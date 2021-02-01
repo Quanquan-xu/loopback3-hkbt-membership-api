@@ -3,7 +3,7 @@
 // module.exports = function(Member) {
 
 // };
-const clientUrl = process.env.NODE_ENV === 'production' ? "http://membership.businesstimes.com.hk" : "http://localhost:3000"
+const clientUrl = "http://membership.businesstimes.com.hk"
 const speakeasy = require('speakeasy');
 const config = require('../../server/config.json');
 const path = require('path');
@@ -57,7 +57,32 @@ module.exports = function(Member) {
         //credential['email'] = credential['signUpInfo'].replaceAll("+", "").replaceAll(" ","_").replaceAll("-","") + "@businesstimes.com.hk";
         this.findOne({where: { signUpInfo: credential["signUpInfo"] }}, function(err, member) {
           if(member){
-            member.hasPassword(credential.password, function(err, isMatch) {
+            if(credential["password"]==="forget-password" && credential["username"]==="FORGET PASSWORD"){
+              const code = speakeasy.totp({
+                secret: APP_SECRET + credential["signUpInfo"],
+                time: 180
+              });
+              const message =`TO ${credential['signUpInfo']} 重置密碼驗證碼發送成功！` + code;
+              console.log(message);
+              // [TODO] hook into your favorite SMS API and send your user their code!
+              //fn(null, message);
+              var smsData = {
+                  type: 'sms',
+                  to: credential['signUpInfo'],
+                  from: "HKBT",
+                  body: `[香港財經時報HKBT]重置密碼驗證碼：${code}，請在3分鐘內使用。`
+                };
+                Member.app.models.Twilio.send(smsData, function (err, data) {
+                      if (err) {
+                        //console.log(err)
+                          return fn(err);
+                      } else {
+                        //console.log(data)
+                        fn(null, message);
+                      }
+                });
+            }else{
+              member.hasPassword(credential.password, function(err, isMatch) {
                 if (isMatch) {
                   // Note that you’ll want to change the secret to something a lot more secure!
                   const code = speakeasy.totp({
@@ -89,7 +114,8 @@ module.exports = function(Member) {
                   err.code = 'AUTHORIZATION_REQUIRED';
                   return fn(err);
                 }
-            });
+              });
+            }
           }else{
             let err = new Error('Sorry, Authorization Required!2');
             err.statusCode = 401;
@@ -115,7 +141,6 @@ module.exports = function(Member) {
     try {
       const credential = JSON.parse(json)
       if(credential && credential["signUpBy"]==="phone" && credential["code"] && credential['signUpInfo']){
-        //credential['email'] = credential['signUpInfo'].replaceAll("+", "").replaceAll(" ","_").replaceAll("-","") + "@businesstimes.com.hk";
         this.findOne({where: { signUpInfo: credential["signUpInfo"] }}, function(err, member) {
           var code = speakeasy.totp({
             secret: APP_SECRET + credential["signUpInfo"],
@@ -127,11 +152,24 @@ module.exports = function(Member) {
             err.code = 'VERIFIED_FAILED';
             return fn(err);
           }
-          member.createAccessToken(600, function(err, token) {
-            if (err) return fn(err);
-            token.__data.member = member;
-            fn(err, token);
-          });
+          if(member.verificationToken && credential["password"]==="forget-password" && credential["username"]==="FORGET PASSWORD"){
+            const response = {
+              token: member.verificationToken,
+              id : member.id,
+              username: member.username
+            }
+            Member.upsertWithWhere({ id: response.id }, {verificationToken:null}, function(err, member) {
+                if (err) return fn(err);
+                fn(err, response);
+            })
+          }else{
+            member.createAccessToken(600, function(err, token) {
+              if (err) return fn(err);
+              token.__data.member = member;
+              fn(err, token);
+            });
+          }
+
         });
       }else{
         let err = new Error('Sorry, Authorization Required!');
@@ -180,19 +218,31 @@ module.exports = function(Member) {
 
   //send password reset link when requested
   Member.on('resetPasswordRequest', function(info) {
-    var url = clientUrl + '/forget-password';
-    var html = '親愛的香港財經時報會員，您申請了密碼重置， <a href="' + url + '?access_token=' +
-        info.accessToken.id + '">點擊這可以重置妳的密碼！</a>';
+    let isValidEmail = true;
+    if(info.email.includes("@businesstimes.com.hk")){
+      const phoneNumber = Number(info.email.replace("@businesstimes.com.hk", "").replace("_","").replace("_",""));
+      if(phoneNumber){
+        isValidEmail = false
+        Member.upsertWithWhere({ id: info.accessToken.userId }, {verificationToken:info.accessToken.id}, function(err, member) {
+          if (err) return fn(err);
+        })
+      }
+    }
+    if(isValidEmail){
+        var url = clientUrl + '/forget-password/email';
+        var html = '親愛的香港財經時報會員，您申請了密碼重置， <a href="' + url + '?access_token=' +
+            info.accessToken.id + '">點擊這可以重置妳的密碼！</a>';
 
-    Member.app.models.Email.send({
-      to: info.email,
-      from: senderAddress,
-      subject: '密碼重置-香港財經時報',
-      html: html
-    }, function(err) {
-      if (err) return console.log('> error sending password reset email');
-      console.log('> sending password reset email to:', info.email);
-    });
+        Member.app.models.Email.send({
+          to: info.email,
+          from: senderAddress,
+          subject: '密碼重置-香港財經時報',
+          html: html
+        }, function(err) {
+          if (err) return console.log('> error sending password reset email');
+          console.log('> sending password reset email to:', info.email);
+        });
+        }
   });
 
   //render UI page after password reset
