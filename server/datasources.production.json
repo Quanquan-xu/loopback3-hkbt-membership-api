@@ -21,6 +21,24 @@
     "user": "admin",
     "connector": "mysql"
   },
+  "Role": {
+    "host": "hkbt-db.c9so7kjb1qm9.ap-east-1.rds.amazonaws.com",
+    "port": 3306,
+    "database": "membership",
+    "password": "j&Rf6u-C4FQt%!e9",
+    "name": "Role",
+    "user": "admin",
+    "connector": "mysql"
+  },
+  "RoleMapping": {
+    "host": "hkbt-db.c9so7kjb1qm9.ap-east-1.rds.amazonaws.com",
+    "port": 3306,
+    "database": "membership",
+    "password": "j&Rf6u-C4FQt%!e9",
+    "name": "RoleMapping",
+    "user": "admin",
+    "connector": "mysql"
+  },
   "emailDs": {
     "name": "emailDs",
     "connector": "mail",

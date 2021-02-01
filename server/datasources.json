@@ -21,6 +21,24 @@
     "user": "admin",
     "connector": "mysql"
   },
+  "Role": {
+    "host": "localhost",
+    "port": 3306,
+    "database": "membership",
+    "password": "membership",
+    "name": "Role",
+    "user": "admin",
+    "connector": "mysql"
+  },
+  "RoleMapping": {
+    "host": "localhost",
+    "port": 3306,
+    "database": "membership",
+    "password": "membership",
+    "name": "RoleMapping",
+    "user": "admin",
+    "connector": "mysql"
+  },
   "emailDs": {
     "name": "emailDs",
     "connector": "mail",
