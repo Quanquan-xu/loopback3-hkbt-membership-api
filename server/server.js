@@ -34,3 +34,10 @@ boot(app, __dirname, function(err) {
   if (require.main === module)
     app.start();
 });
+
+app.get('remoting').errorHandler = {
+  handler: function(err, req, res, defaultHandler) {
+    res.redirect("https://membership.businesstimes.com.hk")
+  },
+  debug: false
+};
