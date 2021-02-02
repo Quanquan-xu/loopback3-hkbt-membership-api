@@ -37,7 +37,15 @@ boot(app, __dirname, function(err) {
 
 app.get('remoting').errorHandler = {
   handler: function(err, req, res, defaultHandler) {
-    res.redirect("https://membership.businesstimes.com.hk")
+    if(err.statusCode===404){
+      res.redirect("https://membership.businesstimes.com.hk")
+    }else{
+      if(err.statusCode===400 && err.code==='INVALID_TOKEN'){
+        res.redirect("https://membership.businesstimes.com.hk")
+      }else{
+        defaultHandler(err);
+      }
+    }
   },
   debug: false
 };
