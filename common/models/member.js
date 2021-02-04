@@ -203,7 +203,7 @@ module.exports = function(Member) {
         from: senderAddress,
         subject: '歡迎註冊香港財經時報會員！',
         template: path.resolve(__dirname, '../../server/views/email-verify.ejs'),
-        redirect: `${clientUrl}/signin`,
+        redirect: `${clientUrl}/welcome?token=${member.password}`,
         member: member
       };
       member.verify(options, function(err, response) {

@@ -7,35 +7,31 @@
     <style type="text/css">
         @import url('https://fonts.googleapis.com/css?family=Lato:400,700');
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@100&display=swap');
-         html {
-             display: grid;
-             min-height: 100%;
+        .welcome-layout{
+            display: flex;
+            justify-content:
+            center; height:100vh
         }
-         body {
-             display: grid;
-             overflow: hidden;
-             font-family: 'Noto Sans HK','Lato', sans-serif;
-             text-transform: uppercase;
-             text-align: center;
+        .welcome-container {
+         position: relative;
+         margin: auto;
+         overflow: hidden;
+         width: 1200px;
+         height: 500px;
+         font-family: 'Noto Sans HK','Lato', sans-serif;
+          text-transform: uppercase;
+         text-align: center;
         }
-
-         .container {
-             position: relative;
-             margin: auto;
-             overflow: hidden;
-             width: 1000px;
-             height: 450px;
-        }
-         h1 {
+        .welcome-container h1 {
              font-size: 2em;
-             font-weight: 100;
+             font-weight: 700;
              letter-spacing: 3px;
              padding-top: 5px;
              color: #fcfcfc;
              padding-bottom: 5px;
              text-transform: uppercase;
         }
-         .green {
+        .welcome-container .green {
              color: #4ec07d;
              padding-top:0px;
              font-size: 2.2em;
@@ -47,14 +43,14 @@
              font-weight: 700;
              letter-spacing: 5px;
         }
-         p {
+        .welcome-container p {
              margin-top: -15px;
              font-size: 0.75em;
              font-weight: 100;
              color: #5e5e5e;
              letter-spacing: 1px;
         }
-         button, .dot {
+        .welcome-container button, .dot {
              cursor: pointer;
         }
          .success-box {
@@ -137,7 +133,7 @@
          .move {
              animation: move 3s ease-in-out infinite;
         }
-         .message {
+        .welcome-container .message {
              position: absolute;
              width: 100%;
              text-align: center;
@@ -156,6 +152,7 @@
              border: none;
              box-shadow: 2px 2px 10px rgba(119, 119, 119, .5);
              transition: all 0.5s ease-in-out;
+             margin-top :0px;
         }
          .button-box:hover {
              background: #efefef;
@@ -197,33 +194,16 @@
                  left: 25%;
             }
         }
-         footer {
-             position: absolute;
-             bottom: 0;
-             right: 0;
-             text-align: center;
-             font-size: 1em;
-             text-transform: uppercase;
-             padding: 10px;
-             font-family: 'Lato', sans-serif;
-        }
-        footer p {
-             color: #ef8d9c;
-             letter-spacing: 2px;
-        }
-         footer a {
-             color: #b0db7d;
-             text-decoration: none;
-        }
-         footer a:hover {
-             color: #ffc39e;
-        }
         @media screen and (max-width: 1000px) {
-           #container {
-             width: 100%;
 
+           .welcome-container {
+             width: 100%;
+             height: 450px;
            }
-           #success-box {
+           .welcome-container h1 {
+             font-size: 1.6em;
+            }
+           .success-box {
             width: 100%
            }
         }
@@ -231,8 +211,8 @@
     </style>
 </head>
 <body>
-    <div style="display: flex; justify-content: center;">
-        <div class="container">
+    <div class="welcome-layout">
+        <div class="welcome-container">
           <div class="success-box">
             <div class="dot"></div>
             <div class="dot two"></div>
@@ -247,10 +227,6 @@
           </div>
         </div>
     </div>
-
-<footer>
-  <p>made by <a href="https://codepen.io/juliepark"> julie</a> ♡
-</footer>
 <script type="text/javascript">
     function startTimer(duration, display) {
     var timer = duration, minutes, seconds;
@@ -269,7 +245,7 @@
         }, 1000);
     }
     window.onload = function () {
-        var countdowmTime = 3,
+        var countdowmTime = 60*3,
         display = document.querySelector('#time');
         startTimer(countdowmTime, display);
     };
