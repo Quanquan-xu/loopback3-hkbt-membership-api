@@ -2,7 +2,8 @@
 
 // module.exports = function(Member) {
 
-// };
+// }
+const fs = require('fs')
 const clientUrl = "http://membership.businesstimes.com.hk"
 const speakeasy = require('speakeasy');
 const config = require('../../server/config.json');
@@ -201,7 +202,7 @@ module.exports = function(Member) {
         type: 'email',
         to: member.email,
         from: senderAddress,
-        subject: '歡迎註冊香港財經時報會員！',
+        subject: '請驗證您的會員電郵地址-香港財經時報',
         template: path.resolve(__dirname, '../../server/views/email-verify.ejs'),
         redirect: `${clientUrl}/welcome?token=${member.password}`,
         member: member
@@ -229,19 +230,25 @@ module.exports = function(Member) {
       }
     }
     if(isValidEmail){
-        var url = clientUrl + '/forget-password/email';
-        var html = '親愛的香港財經時報會員，您申請了密碼重置， <a href="' + url + '?access_token=' +
-            info.accessToken.id + '">點擊這可以重置妳的密碼！</a>';
-
-        Member.app.models.Email.send({
-          to: info.email,
-          from: senderAddress,
-          subject: '密碼重置-香港財經時報',
-          html: html
-        }, function(err) {
-          if (err) return console.log('> error sending password reset email');
-          console.log('> sending password reset email to:', info.email);
-        });
+        const link = clientUrl + '/forget-password/email' + '?access_token=' + info.accessToken.id
+        const username = info.user.username;
+        try {
+          let template = fs.readFileSync(path.resolve(__dirname, '../../server/views/reset-password.ejs'), 'utf8')
+          template = template.replace("$USERNAME",username).replace("$USERNAME",username).replace("$USERNAME",username).replace("$USERNAME",username)
+          template = template.replace("$LINK", link).replace("$LINK", link).replace("$LINK", link).replace("$LINK", link)
+          template = template.replace("$TO", info.email).replace("$TO", info.email)
+          Member.app.models.Email.send({
+            to: info.email,
+            from: senderAddress,
+            subject: '請重設您的會員密碼-香港財經時報',
+            html: template
+          }, function(err) {
+            if (err) return console.log('> error sending password reset email');
+            console.log('> sending password reset email to:', info.email);
+          });
+        } catch (err) {
+          return
+        }
         }
   });
 
