@@ -38,10 +38,14 @@ boot(app, __dirname, function(err) {
 app.get('remoting').errorHandler = {
   handler: function(err, req, res, defaultHandler) {
     if(err.statusCode===404){
-      res.redirect("https://membership.businesstimes.com.hk")
+      if(err.code==='EMAIL_NOT_FOUND'){
+        defaultHandler(err);
+      }else{
+        res.redirect("https://membership.businesstimes.com.hk/signin")
+      }
     }else{
       if(err.statusCode===400 && err.code==='INVALID_TOKEN'){
-        res.redirect("https://membership.businesstimes.com.hk")
+        res.redirect("https://membership.businesstimes.com.hk/signin")
       }else{
         defaultHandler(err);
       }
