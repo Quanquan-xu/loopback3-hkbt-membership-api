@@ -7,7 +7,7 @@
     "host": "localhost",
     "port": 3306,
     "database": "membership",
-    "password": "membership",
+    "password": "loopback3",
     "name": "member",
     "user": "admin",
     "connector": "mysql"
@@ -16,7 +16,7 @@
     "host": "localhost",
     "port": 3306,
     "database": "membership",
-    "password": "membership",
+    "password": "loopback3",
     "name": "favourite",
     "user": "admin",
     "connector": "mysql"
@@ -25,7 +25,7 @@
     "host": "localhost",
     "port": 3306,
     "database": "membership",
-    "password": "membership",
+    "password": "loopback3",
     "name": "Role",
     "user": "admin",
     "connector": "mysql"
@@ -34,7 +34,7 @@
     "host": "localhost",
     "port": 3306,
     "database": "membership",
-    "password": "membership",
+    "password": "loopback3",
     "name": "RoleMapping",
     "user": "admin",
     "connector": "mysql"
