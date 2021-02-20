@@ -17,19 +17,28 @@ module.exports = function(app) {
     } else{
       console.log('Created users:', users);
 
-      //create the admin role
       Role.create({
-        name: 'admin'
+        name: 'admin',
+        description:"能訪問，可用filler查找會員資料，能對會員資料增，刪，改，能對其他授權他們，且能對其他權限增，刪，查，改"
       }, function(err, role) {
         if (err) throw err;
-        //console.log('Created role:', role);
-        //make bob an admin
         role.principals.create({
           principalType: RoleMapping.USER,
           principalId: users[0].id
         }, function(err, principal) {
           if (err) throw err;
-          //console.log('Created principal:', principal);
+          Role.create({
+            name: 'manager',
+            description:"能訪問，可用filler查找會員資料，能對會員資料增，刪，改"
+          }, function(err, role) {
+            if (err) throw err;
+            Role.create({
+              name: 'general',
+              description:"能訪問，可用filler查找會員資料，不能對會員資料增，刪，改"
+            }, function(err, role) {
+              if (err) throw err;
+            });
+          });
         });
       });
     }

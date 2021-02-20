@@ -27,14 +27,14 @@
   },
   "RoleMapping": {
     "dataSource": "RoleMapping",
-    "public": false,
+    "public": true,
     "options": {
       "strictObjectIDCoercion": true
     }
   },
   "Role": {
     "dataSource": "Role",
-    "public": false
+    "public": true
   },
   "Email": {
     "dataSource": "emailDs"
