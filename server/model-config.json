@@ -25,13 +25,6 @@
     "dataSource": "db",
     "public": false
   },
-  "RoleMapping": {
-    "dataSource": "RoleMapping",
-    "public": true,
-    "options": {
-      "strictObjectIDCoercion": true
-    }
-  },
   "Role": {
     "dataSource": "Role",
     "public": true
@@ -50,5 +43,12 @@
   "favourite": {
     "dataSource": "favourite",
     "public": true
+  },
+  "roleMapping": {
+    "dataSource": "RoleMapping",
+    "public": true,
+    "options": {
+      "strictObjectIDCoercion": true
+    }
   }
 }

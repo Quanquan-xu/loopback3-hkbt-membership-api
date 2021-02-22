@@ -6,8 +6,7 @@
 module.exports = function(app) {
   var Member = app.models.member;
   var Role = app.models.Role;
-  var RoleMapping = app.models.RoleMapping;
-  var Favourite =  app.models.favourite;
+  var RoleMapping = app.models.roleMapping;
 
   Member.create([
     {username: 'HKBT', email: 'noreply@businesstimes.com.hk', emailInfo:'noreply@businesstimes.com.hk', password: 'Hkbt@2021',"signUpBy": "development","signUpInfo": "admin","emailVerified": true},
@@ -22,9 +21,10 @@ module.exports = function(app) {
         description:"能訪問，可用filler查找會員資料，能對會員資料增，刪，改，能對其他授權他們，且能對其他權限增，刪，查，改"
       }, function(err, role) {
         if (err) throw err;
-        role.principals.create({
+        RoleMapping.create({
           principalType: RoleMapping.USER,
-          principalId: users[0].id
+          principalId: users[0].id,
+          roleId:role.id
         }, function(err, principal) {
           if (err) throw err;
           Role.create({

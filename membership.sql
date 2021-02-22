@@ -38,10 +38,10 @@ CREATE TABLE IF NOT EXISTS Role (
   UNIQUE KEY Role_id_uindex (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS RoleMapping (
+CREATE TABLE IF NOT EXISTS roleMapping (
   id int(11) NOT NULL AUTO_INCREMENT,
   principalType char(50) COLLATE utf8_unicode_ci NOT NULL,
-  principalId int(11) DEFAULT NULL,
+  principalId int(11) UNIQUE DEFAULT NULL,
   roleId int(11) DEFAULT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY AppRoleMapping_id_uindex (id)
